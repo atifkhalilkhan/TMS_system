@@ -6,7 +6,7 @@ import {
     Plus, Hash, Search, Trash2, Edit2,
     Calendar as CalendarIcon, Flag, CircleDashed, ChevronDown, ChevronRight, MoreHorizontal
 } from "lucide-react";
-import { BABox, BAButton, BAModal, BAInput } from "basuite";
+import { BABox, BAButton, BAModal} from "basuite";
 import dayjs from "dayjs";
 
 export default function ProjectScreen() {
@@ -19,17 +19,13 @@ export default function ProjectScreen() {
     const [tempTitle, setTempTitle] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
 
-    // bulk checkbox selection (for Select All & delete)
     const [bulkSelectedIds, setBulkSelectedIds] = useState<string[]>([]);
-    // tracks which sections are in "bulk-mode" (after Select All)
     const [sectionBulkMode, setSectionBulkMode] = useState<Record<string, boolean>>({});
 
-    // inline add inputs for sections
     const [newInlineTitles, setNewInlineTitles] = useState<Record<string, string>>({});
 
-    // Modal-local editable ticket (staged); modalTicket.isNew == create mode
     const [modalTicket, setModalTicket] = useState<any>(null);
 
     const priorityConfig: any = {
