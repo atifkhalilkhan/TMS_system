@@ -28,7 +28,6 @@ export default function Sidebar() {
   const [spaceModal, setSpaceModal] = useState(false)
   const [projectModal, setProjectModal] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  // Mobile State
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const initialSpace = { spaceName: "", iconBgColor: "#6366f1" };
@@ -39,7 +38,6 @@ export default function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Mobile par navigation ke baad sidebar band karne ke liye
   useEffect(() => {
     setIsMobileOpen(false)
   }, [location.pathname])
@@ -50,7 +48,6 @@ export default function Sidebar() {
       supabase.from('Space').select('*').order('created_at', { ascending: true }),
       supabase.from('Project').select('*').order('created_at', { ascending: true })
     ])
-    // handle possible errors
     if (sRes.error) {
       console.error(sRes.error)
       message.error("Failed to load spaces")
@@ -77,7 +74,6 @@ export default function Sidebar() {
       });
       setExpandedSpaces(autoExpand);
     } else {
-      // when search is cleared, collapse expansions created by search
       setExpandedSpaces({});
     }
   }, [searchQuery, spaces, projects]);
@@ -237,7 +233,6 @@ export default function Sidebar() {
                       {isExpanded && (
                         <div className="ml-3.5 mt-1 pl-4 border-l border-white/10 space-y-1">
                           {spaceProjects.map(proj => {
-                            // Navigate to a path that includes space id and project id
                             const projectUrl = `/space/${space.id}/project/${proj.id}`;
                             const isActive = location.pathname === projectUrl || location.pathname.startsWith(`${projectUrl}/`);
                             return (
