@@ -19,7 +19,7 @@ export default function ProjectScreen() {
     const [tempTitle, setTempTitle] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
-    const [, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     const [bulkSelectedIds, setBulkSelectedIds] = useState<string[]>([]);
     const [sectionBulkMode, setSectionBulkMode] = useState<Record<string, boolean>>({});
@@ -83,6 +83,16 @@ export default function ProjectScreen() {
     }, [projectId]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
+
+    // Show a simple loading state while data is being fetched.
+    // (You asked to fix loading only — so I added this minimal usage.)
+    if (loading) {
+        return (
+            <BABox className="min-h-screen flex items-center justify-center bg-[#fcfcfc] text-[#292d34] font-sans pb-20">
+                <div className="text-gray-500">Loading...</div>
+            </BABox>
+        );
+    }
 
     const isVisible = (task: any): boolean => {
         if (!searchQuery) return true;

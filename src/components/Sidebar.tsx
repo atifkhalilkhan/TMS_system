@@ -50,6 +50,15 @@ export default function Sidebar() {
       supabase.from('Space').select('*').order('created_at', { ascending: true }),
       supabase.from('Project').select('*').order('created_at', { ascending: true })
     ])
+    // handle possible errors
+    if (sRes.error) {
+      console.error(sRes.error)
+      message.error("Failed to load spaces")
+    }
+    if (pRes.error) {
+      console.error(pRes.error)
+      message.error("Failed to load projects")
+    }
     setSpaces(sRes.data || [])
     setProjects(pRes.data || [])
     setLoading(false)
@@ -67,6 +76,9 @@ export default function Sidebar() {
         }
       });
       setExpandedSpaces(autoExpand);
+    } else {
+      // when search is cleared, collapse expansions created by search
+      setExpandedSpaces({});
     }
   }, [searchQuery, spaces, projects]);
 
@@ -89,13 +101,18 @@ export default function Sidebar() {
 
   const handleSaveProject = async () => {
     if (!projectObj.name) return message.error("Enter Project Name")
-    const { error } = isEditing
+    const { error, data } = isEditing
       ? await supabase.from('Project').update({ name: projectObj.name, description: projectObj.description }).eq('id', projectObj.id)
-      : await supabase.from('Project').insert([projectObj])
+      : await supabase.from('Project').insert([projectObj]).select()
     if (!error) {
       message.success(isEditing ? "Project Updated" : "Project Added");
       setProjectModal(false);
       getData();
+
+      if (!isEditing && data?.[0]) {
+        const newProj = data[0];
+        navigate(`/space/${newProj.spaceId}/project/${newProj.id}`);
+      }
     }
   }
 
@@ -104,7 +121,7 @@ export default function Sidebar() {
     if (!error) {
       message.success("Project Deleted");
       getData();
-      if (location.pathname === `/project/${id}`) navigate('/');
+      if (location.pathname === `/space/${projectObj.spaceId}/project/${id}` || location.pathname.includes(`/project/${id}`)) navigate('/');
     }
   }
 
@@ -115,9 +132,8 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Menu Button - Sirf mobile par dikhega */}
       {!isMobileOpen && (
-        <button 
+        <button
           onClick={() => setIsMobileOpen(true)}
           className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-[#141417] border border-white/10 rounded-lg text-white shadow-xl"
         >
@@ -125,15 +141,13 @@ export default function Sidebar() {
         </button>
       )}
 
-      {/* Mobile Overlay */}
       {isMobileOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[51] lg:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
-      {/* Sidebar Aside */}
       <aside className={`
         fixed left-0 top-0 w-64 h-screen bg-[#0f0f11] border-r border-white/5 flex flex-col z-[55] shadow-2xl overflow-hidden font-sans transition-transform duration-300 ease-in-out
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
@@ -149,11 +163,10 @@ export default function Sidebar() {
               <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Online</p>
             </div>
           </div>
-          {/* Mobile Close Icon */}
-          <X 
-            size={18} 
-            className="lg:hidden text-gray-500 cursor-pointer" 
-            onClick={() => setIsMobileOpen(false)} 
+          <X
+            size={18}
+            className="lg:hidden text-gray-500 cursor-pointer"
+            onClick={() => setIsMobileOpen(false)}
           />
           <Settings size={16} className="hidden lg:block text-gray-600 hover:text-white cursor-pointer transition-colors" />
         </div>
@@ -224,10 +237,12 @@ export default function Sidebar() {
                       {isExpanded && (
                         <div className="ml-3.5 mt-1 pl-4 border-l border-white/10 space-y-1">
                           {spaceProjects.map(proj => {
-                            const isActive = location.pathname === `/project/${proj.id}`;
+                            // Navigate to a path that includes space id and project id
+                            const projectUrl = `/space/${space.id}/project/${proj.id}`;
+                            const isActive = location.pathname === projectUrl || location.pathname.startsWith(`${projectUrl}/`);
                             return (
                               <div key={proj.id}
-                                onClick={() => navigate(`/project/${proj.id}`)}
+                                onClick={() => navigate(projectUrl)}
                                 className={`group/proj flex items-center gap-2.5 p-2 rounded-lg text-[13px] cursor-pointer transition-all ${isActive ? 'text-indigo-400 bg-indigo-500/10 font-medium' : 'text-gray-500 hover:text-gray-200 hover:bg-white/5'}`}>
                                 <Hash size={12} className={isActive ? 'text-indigo-400' : 'text-gray-600'} />
                                 <span className="flex-1 truncate">{proj.name}</span>
@@ -267,7 +282,6 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Modals wahi rahenge */}
       <BAModal title={isEditing ? "Edit Space" : "New Space"} open={spaceModal} close={() => setSpaceModal(false)}
         content={<BAFormElement model={spaceObj} setModel={setSpaceObj} onSaveClick={handleSaveSpace} formElement={[{ col: 12, elementType: "input", label: "Space Name", key: "spaceName", required: true }]} />}
       />

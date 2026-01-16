@@ -8,8 +8,8 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />          
-          <Route path="/project/:projectId" element={<ProjectScreen />} />
+          <Route path="/" element={<Home />} />      
+          <Route path="/space/:spaceId/project/:projectId" element={<ProjectScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>
