@@ -9,7 +9,7 @@ export default function AppRouter() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />      
-          <Route path="/space/:spaceId/project/:projectId" element={<ProjectScreen />} />
+          <Route path="/space:spaceId/project:projectId" element={<ProjectScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>
