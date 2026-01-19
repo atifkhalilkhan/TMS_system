@@ -236,7 +236,7 @@ export default function Sidebar() {
                             const projectUrl = `/space/${space.id}/project/${proj.id}`;
                             const isActive = location.pathname === projectUrl || location.pathname.startsWith(`${projectUrl}/`);
                             return (
-                              <div key={proj.id}
+                              <div key={proj.id}                
                                 onClick={() => navigate(projectUrl)}
                                 className={`group/proj flex items-center gap-2.5 p-2 rounded-lg text-[13px] cursor-pointer transition-all ${isActive ? 'text-indigo-400 bg-indigo-500/10 font-medium' : 'text-gray-500 hover:text-gray-200 hover:bg-white/5'}`}>
                                 <Hash size={12} className={isActive ? 'text-indigo-400' : 'text-gray-600'} />
