@@ -233,7 +233,7 @@ export default function Sidebar() {
                       {isExpanded && (
                         <div className="ml-3.5 mt-1 pl-4 border-l border-white/10 space-y-1">
                           {spaceProjects.map(proj => {
-                            const projectUrl = `/space${space.id}/project${proj.id}`;
+                            const projectUrl = `/space/${space.id}/project/${proj.id}`;
                             const isActive = location.pathname === projectUrl || location.pathname.startsWith(`${projectUrl}/`);
                             return (
                               <div key={proj.id}
